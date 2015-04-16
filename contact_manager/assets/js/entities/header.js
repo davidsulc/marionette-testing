@@ -15,19 +15,20 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
     }
   });
 
-  var initializeHeaders = function(){
-    Entities.headers = new Entities.HeaderCollection([
+  Entities._initializeHeaders = function(){
+    return new Entities.HeaderCollection([
       { name: "Contacts", url: "contacts", navigationTrigger: "contacts:list" },
       { name: "About", url: "about", navigationTrigger: "about:show" }
     ]);
   };
 
+  var headers;
   var API = {
     getHeaders: function(){
-      if(Entities.headers === undefined){
-        initializeHeaders();
+      if(headers === undefined){
+        headers = Entities._initializeHeaders();
       }
-      return Entities.headers;
+      return headers;
     }
   };
 
