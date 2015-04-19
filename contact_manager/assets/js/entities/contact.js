@@ -37,7 +37,7 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
 
   Entities.configureStorage("ContactManager.Entities.ContactCollection");
 
-  var initializeContacts = function(){
+  Entities._initializeContacts = function(){
     var contacts = new Entities.ContactCollection([
       { id: 1, firstName: "Alice", lastName: "Arten", phoneNumber: "555-0184" },
       { id: 2, firstName: "Bob", lastName: "Brigham", phoneNumber: "555-0163" },
@@ -62,7 +62,7 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       $.when(promise).done(function(fetchedContacts){
         if(fetchedContacts.length === 0){
           // if we don't have any contacts yet, create some for convenience
-          var models = initializeContacts();
+          var models = Entities._initializeContacts();
           contacts.reset(models);
         }
       });
