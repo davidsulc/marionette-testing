@@ -92,6 +92,11 @@ describe("Contact entity", function(){
         expect(promise.state()).to.equal("resolved");
       });
     });
+
+    it("is configured for localstorage", function(){
+      var contact = new ContactManager.Entities.Contact();
+      expect(contact.localStorage instanceof Backbone.LocalStorage).to.be.true;
+    });
   });
 
   describe("Collection", function(){
@@ -152,6 +157,11 @@ describe("Contact entity", function(){
           done();
         });
       }));
+    });
+
+    it("is configured for localstorage", function(){
+      var contacts = new ContactManager.Entities.ContactCollection();
+      expect(contacts.localStorage instanceof Backbone.LocalStorage).to.be.true;
     });
   });
 });
