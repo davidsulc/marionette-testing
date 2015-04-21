@@ -5,7 +5,7 @@ ContactManager.module("AboutApp", function(AboutApp, ContactManager, Backbone, M
     }
   });
 
-  var API = {
+  AboutApp._API = {
     showAbout: function(){
       AboutApp.Show.Controller.showAbout();
       ContactManager.execute("set:active:header", "about");
@@ -14,12 +14,12 @@ ContactManager.module("AboutApp", function(AboutApp, ContactManager, Backbone, M
 
   ContactManager.on("about:show", function(){
     ContactManager.navigate("about");
-    API.showAbout();
+    AboutApp._API.showAbout();
   });
 
   AboutApp.on("start", function(){
     new AboutApp.Router({
-      controller: API
+      controller: AboutApp._API
     });
   });
 });

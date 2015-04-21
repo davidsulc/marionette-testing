@@ -9,18 +9,22 @@ ContactManager.getCurrentRoute = function(){
   return Backbone.history.fragment
 };
 
+ContactManager.RegionContainer = Marionette.LayoutView.extend({
+  el: "#app-container",
+
+  regions: {
+    header: "#header-region",
+    main: "#main-region",
+    dialog: "#dialog-region"
+  }
+});
+
+ContactManager._configureRegions = function(){
+  this.regions = new ContactManager.RegionContainer();
+};
+
 ContactManager.on("before:start", function(){
-  var RegionContainer = Marionette.LayoutView.extend({
-    el: "#app-container",
-
-    regions: {
-      header: "#header-region",
-      main: "#main-region",
-      dialog: "#dialog-region"
-    }
-  });
-
-  ContactManager.regions = new RegionContainer();
+  ContactManager._configureRegions();
   ContactManager.regions.dialog.onShow = function(view){
     var self = this;
     var closeDialog = function(){
