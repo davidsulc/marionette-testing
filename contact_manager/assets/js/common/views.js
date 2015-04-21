@@ -31,7 +31,7 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
         top: "30px", // Top position relative to parent in px
         left: "auto" // Left position relative to parent in px
       };
-      $("#spinner").spin(opts);
+      Backbone.$("#spinner").spin(opts);
     }
   });
 });
