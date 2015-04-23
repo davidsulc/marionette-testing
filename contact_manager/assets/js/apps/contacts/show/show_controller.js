@@ -8,8 +8,8 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
       ContactManager.regions.main.show(loadingView);
 
       var fetchingContact = ContactManager.request("contact:entity", id);
+      var contactView;
       $.when(fetchingContact).done(function(contact){
-        var contactView;
         if(contact !== undefined){
           contactView = new Show.Contact({
             model: contact
@@ -25,6 +25,8 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
 
         ContactManager.regions.main.show(contactView);
       });
+
+      return contactView;
     }
   }
 });
