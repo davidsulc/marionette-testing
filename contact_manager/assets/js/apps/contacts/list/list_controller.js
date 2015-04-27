@@ -1,13 +1,42 @@
 ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbone, Marionette, $, _){
   List.Controller = {
+    _configurePanel: function(contacts, criterion){
+      if(criterion){
+        this.collection.filter(criterion);
+        this.once("show", function(){
+          this.triggerMethod("set:filter:criterion", criterion);
+        });
+      }
+
+      this.on("contacts:filter", function(filterCriterion){
+        this.collection.filter(filterCriterion);
+        ContactManager.trigger("contacts:filter", filterCriterion);
+      });
+
+      this.on("contact:new", function(){
+        var nextId = 1;
+        if(contacts.length > 0){
+          nextId = contacts.max(function(c){ return c.id; }).get("id") + 1;
+        }
+        var newContact = new ContactManager.Entities.Contact({ id: nextId });
+
+        var view = new List.NewModal({
+          model: newContact
+        });
+
+        this.listenTo(view, "contact:created", function(newContact){
+          this.trigger("contact:created", newContact);
+        });
+
+        ContactManager.regions.dialog.show(view);
+      });
+    },
+
     listContacts: function(criterion){
       var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.regions.main.show(loadingView);
 
       var fetchingContacts = ContactManager.request("contact:entities");
-
-      var contactsListLayout = new List.Layout();
-      var contactsListPanel = new List.Panel();
 
       $.when(fetchingContacts).done(function(contacts){
         var filteredContacts = ContactManager.Entities.FilteredCollection({
@@ -24,58 +53,23 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           }
         });
 
-        if(criterion){
-          filteredContacts.filter(criterion);
-          contactsListPanel.once("show", function(){
-            contactsListPanel.triggerMethod("set:filter:criterion", criterion);
-          });
-        }
+        var contactsListPanel = new List.Panel({
+          collection: filteredContacts
+        });
+        List.Controller._configurePanel.call(contactsListPanel, contacts, criterion);
 
         var contactsListView = new List.Contacts({
           collection: filteredContacts
         });
 
-        contactsListPanel.on("contacts:filter", function(filterCriterion){
-          filteredContacts.filter(filterCriterion);
-          ContactManager.trigger("contacts:filter", filterCriterion);
-        });
-
-        contactsListLayout.on("show", function(){
-          contactsListLayout.panelRegion.show(contactsListPanel);
-          contactsListLayout.contactsRegion.show(contactsListView);
-        });
-
-        contactsListPanel.on("contact:new", function(){
-          var newContact = new ContactManager.Entities.Contact();
-
-          var view = new ContactManager.ContactsApp.New.Contact({
-            model: newContact
-          });
-
-          view.on("form:submit", function(data){
-            if(contacts.length > 0){
-              var highestId = contacts.max(function(c){ return c.id; }).get("id");
-              data.id = highestId + 1;
-            }
-            else{
-              data.id = 1;
-            }
-            if(newContact.save(data)){
-              contacts.add(newContact);
-              view.trigger("dialog:close");
-              var newContactView = contactsListView.children.findByModel(newContact);
-              // check whether the new contact view is displayed (it could be
-              // invisible due to the current filter criterion)
-              if(newContactView){
-                newContactView.flash("success");
-              }
-            }
-            else{
-              view.triggerMethod("form:data:invalid", newContact.validationError);
-            }
-          });
-
-          ContactManager.regions.dialog.show(view);
+        contactsListPanel.on("contact:created", function(newContact){
+          contacts.add(newContact);
+          var newContactView = contactsListView.children.findByModel(newContact);
+          // check whether the new contact view is displayed (it could be
+          // invisible due to the current filter criterion)
+          if(newContactView){
+            newContactView.flash("success");
+          }
         });
 
         contactsListView.on("childview:contact:show", function(childView, args){
@@ -104,6 +98,11 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
 
         contactsListView.on("childview:contact:delete", function(childView, args){
           args.model.destroy();
+        });
+
+        var contactsListLayout = new List.Layout({
+          panelView: contactsListPanel,
+          contactsView: contactsListView
         });
 
         ContactManager.regions.main.show(contactsListLayout);

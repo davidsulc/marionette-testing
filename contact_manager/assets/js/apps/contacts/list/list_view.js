@@ -2,6 +2,13 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
   List.Layout = Marionette.LayoutView.extend({
     template: "#contact-list-layout",
 
+    initialize: function(options){
+      this.on("show", function(){
+        this.panelRegion.show(this.getOption("panelView"));
+        this.contactsRegion.show(this.getOption("contactsView"));
+      });
+    },
+
     regions: {
       panelRegion: "#panel-region",
       contactsRegion: "#contacts-region"
@@ -95,6 +102,20 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
       this.attachHtml = function(collectionView, childView, index){
         collectionView.$el.prepend(childView.el);
       }
+    }
+  });
+
+  List.NewModal = ContactManager.ContactsApp.New.Contact.extend({
+    initialize: function(options){
+      this.on("form:submit", function(data){
+        if(this.model.save(data)){
+          this.trigger("dialog:close");
+          this.trigger("contact:created", this.model);
+        }
+        else{
+          this.triggerMethod("form:data:invalid", this.model.validationError);
+        }
+      });
     }
   });
 });
