@@ -158,7 +158,11 @@ describe("ContactsApp.List.Controller", function(){
       describe("Contacts", function(){
         describe("events", function(){
           beforeEach(function(){
-            this.model = new ContactManager.Entities.Contact({ id: 3 });
+            this.model = new ContactManager.Entities.Contact({
+              id: 3,
+              firstName: "Mary",
+              lastName: "Minnow"
+            });
             this.view = new ContactManager.ContactsApp.List.Contacts({ collection: new ContactManager.Entities.ContactCollection() });
             sinon.stub(ContactManager.ContactsApp.List, "Contacts").returns(this.view);
           });
@@ -192,82 +196,58 @@ describe("ContactsApp.List.Controller", function(){
 
           describe("childview:contact:edit", function(){
             beforeEach(function(){
-              this.editView = new Marionette.Object();
-              sinon.stub(ContactManager.ContactsApp.Edit, "Contact").returns(this.editView);
+              this.editView = new ContactManager.ContactsApp.List.EditModal({ model: this.model });
+              sinon.stub(ContactManager.ContactsApp.List, "EditModal").returns(this.editView);
               sinon.stub(ContactManager.regions.dialog, "show");
             });
 
             afterEach(function(){
-              ContactManager.ContactsApp.Edit.Contact.restore();
+              ContactManager.ContactsApp.List.EditModal.restore();
               ContactManager.regions.dialog.show.restore();
             });
 
-            it("displays an edit view (in the dialog region) for the provided model", function(){
-              this.controller.listContacts();
-              var options = { model: this.model };
-              this.view.trigger("childview:contact:edit", null, options);
-              expect(ContactManager.ContactsApp.Edit.Contact).to.have.been.calledWith(options).once;
-              expect(ContactManager.regions.dialog.show).to.have.been.calledWith(this.editView).once;
-            });
-
-            describe("saving the updated contact", function(){
-              describe("success", function(){
-                beforeEach(function(){
-                  this.childView = {
-                    render: sinon.stub(),
-                    flash: sinon.stub()
-                  };
-                  sinon.stub(this.model, "save").returns(true);
-
-                  this.controller.listContacts();
-                  this.view.trigger("childview:contact:edit", this.childView, { model: this.model });
-                });
-
-                afterEach(function(){
-                  delete this.childView;
-                  this.model.save.restore();
-                });
-
-                it("rerenders the childview", function(){
-                  this.editView.trigger("form:submit", {});
-                  expect(this.childView.render).to.have.been.called.once;
-                });
-
-                it("calls the childview's flash method", function(){
-                  this.editView.trigger("form:submit", {});
-                  expect(this.childView.flash).to.have.been.called.once;
-                });
-
-                it("triggers 'dialog:close' on the edit view", sinon.test(function(){
-                  this.spy(this.editView, "trigger");
-                  this.editView.trigger("form:submit", {});
-                  expect(this.editView.trigger).to.have.been.calledWith("dialog:close").once;
-                }));
+            describe("edit modal", function(){
+              it("is displayed in the dialog region", function(){
+                this.controller.listContacts();
+                var options = { model: this.model };
+                this.view.trigger("childview:contact:edit", null, options);
+                expect(ContactManager.ContactsApp.List.EditModal).to.have.been.calledWith(options).once;
+                expect(ContactManager.regions.dialog.show).to.have.been.calledWith(this.editView).once;
               });
 
-              describe("failure", function(){
-                beforeEach(function(){
-                  var error = { error: "test error" };
-                  this.error = error;
-                  sinon.stub(this.model, "save", function(){
-                    this.validationError = error;
-                    return false;
-                  });
+              it("has the contact's name in the title attribute", function(){
+                this.controller.listContacts();
+                this.view.trigger("childview:contact:edit", null, { model: this.model });
+                expect(this.editView.title).to.contain(this.model.get("firstName") + " " + this.model.get("lastName"));
+              });
+            });
 
-                  this.controller.listContacts();
-                  this.view.trigger("childview:contact:edit", this.childView, { model: this.model });
-                });
+            describe("successful save of updated contact", function(){
+              beforeEach(function(){
+                this.childView = {
+                  render: sinon.stub()
+                };
+                this.flashStub = sinon.stub();
+                this.childView.render.returns({ flash: this.flashStub });
+                sinon.stub(this.model, "save").returns(true);
 
-                afterEach(function(){
-                  delete this.error;
-                  this.model.save.restore();
-                });
+                this.controller.listContacts();
+                this.view.trigger("childview:contact:edit", this.childView, { model: this.model });
+              });
 
-                it("calls the 'form:data:invalid' trigger method on the edit view, sending the errors", sinon.test(function(){
-                  this.stub(this.editView, "triggerMethod");
-                  this.editView.trigger("form:submit", {});
-                  expect(this.editView.triggerMethod).to.have.been.calledWith("form:data:invalid", this.error).once;
-                }));
+              afterEach(function(){
+                delete this.childView;
+                this.model.save.restore();
+              });
+
+              it("rerenders the childview", function(){
+                this.editView.trigger("contact:updated");
+                expect(this.childView.render).to.have.been.called.once;
+              });
+
+              it("calls the childview's flash method", function(){
+                this.editView.trigger("contact:updated");
+                expect(this.flashStub).to.have.been.called.once;
               });
             });
           });

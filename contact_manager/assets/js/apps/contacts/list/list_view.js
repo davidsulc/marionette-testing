@@ -105,16 +105,33 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
     }
   });
 
+  var processFormSubmit = function(data, triggerName){
+    if(this.model.save(data)){
+      this.trigger("dialog:close");
+      this.trigger(triggerName, this.model);
+    }
+    else{
+      this.triggerMethod("form:data:invalid", this.model.validationError);
+    }
+  };
+
   List.NewModal = ContactManager.ContactsApp.New.Contact.extend({
     initialize: function(options){
       this.on("form:submit", function(data){
-        if(this.model.save(data)){
-          this.trigger("dialog:close");
-          this.trigger("contact:created", this.model);
-        }
-        else{
-          this.triggerMethod("form:data:invalid", this.model.validationError);
-        }
+        processFormSubmit.call(this, data, "contact:created");
+      });
+    }
+  });
+
+  List.EditModal = ContactManager.ContactsApp.Edit.Contact.extend({
+    initialize: function(options){
+      var parentInitializer = ContactManager.ContactsApp.Edit.Contact.prototype.initialize;
+      if(parentInitializer){
+        parentInitializer.call(this);
+      }
+
+      this.on("form:submit", function(data){
+        processFormSubmit.call(this, data, "contact:updated");
       });
     }
   });

@@ -32,6 +32,28 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
       });
     },
 
+    _configureList: function(){
+      this.on("childview:contact:show", function(childView, args){
+        ContactManager.trigger("contact:show", args.model.get("id"));
+      });
+
+      this.on("childview:contact:edit", function(childView, args){
+        var view = new ContactManager.ContactsApp.List.EditModal({
+          model: args.model
+        });
+
+        this.listenTo(view, "contact:updated", function(){
+          childView.render().flash("success");
+        });
+
+        ContactManager.regions.dialog.show(view);
+      });
+
+      this.on("childview:contact:delete", function(childView, args){
+        args.model.destroy();
+      });
+    },
+
     listContacts: function(criterion){
       var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.regions.main.show(loadingView);
@@ -61,6 +83,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
         var contactsListView = new List.Contacts({
           collection: filteredContacts
         });
+        List.Controller._configureList.call(contactsListView);
 
         contactsListPanel.on("contact:created", function(newContact){
           contacts.add(newContact);
@@ -72,33 +95,6 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           }
         });
 
-        contactsListView.on("childview:contact:show", function(childView, args){
-          ContactManager.trigger("contact:show", args.model.get("id"));
-        });
-
-        contactsListView.on("childview:contact:edit", function(childView, args){
-          var model = args.model;
-          var view = new ContactManager.ContactsApp.Edit.Contact({
-            model: model
-          });
-
-          view.on("form:submit", function(data){
-            if(model.save(data)){
-              childView.render();
-              view.trigger("dialog:close");
-              childView.flash("success");
-            }
-            else{
-              view.triggerMethod("form:data:invalid", model.validationError);
-            }
-          });
-
-          ContactManager.regions.dialog.show(view);
-        });
-
-        contactsListView.on("childview:contact:delete", function(childView, args){
-          args.model.destroy();
-        });
 
         var contactsListLayout = new List.Layout({
           panelView: contactsListPanel,
