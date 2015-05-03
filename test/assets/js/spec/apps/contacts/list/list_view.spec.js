@@ -81,7 +81,7 @@ describe("ContactsApp.List", function(){
 
     it("triggers 'contact:new' when the 'new' button is clicked", function(done){
       this.view.once("render", function(){
-        this.$el.find(".js-new").click();
+        this.ui.newButton.click();
         expect(this.trigger).to.have.been.calledWith("contact:new").once;
         done();
       });
@@ -91,7 +91,7 @@ describe("ContactsApp.List", function(){
     it("triggers 'contacts:filter' with the criterion when #filter-form is submitted", function(done){
       this.view.once("render", function(){
         this.criterion.value("abc");
-        this.$el.find("#filter-form button[type=submit]").click();
+        this.ui.filterFormSubmitButton.click();
         expect(this.trigger).to.have.been.calledWith("contacts:filter", "abc").once;
         done();
       });
@@ -135,7 +135,7 @@ describe("ContactsApp.List", function(){
         it("triggers 'contact:" + action + "' when the '" + action + "' button is clicked", sinon.test(function(done){
           this.spy(this.view, "trigger");
           this.view.once("render", function(){
-            this.$el.find(".js-" + action).click();
+            this.ui[action + "Button"].click();
             expect(this.trigger).to.have.been.calledWith("contact:" + action).once;
             done();
           });

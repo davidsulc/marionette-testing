@@ -18,22 +18,24 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
   List.Panel = Marionette.ItemView.extend({
     template: "#contact-list-panel",
 
+    ui: {
+      criterion: "input.js-filter-criterion",
+      filterForm: "#filter-form",
+      filterFormSubmitButton: "#filter-form button[type=submit]",
+      newButton: "button.js-new"
+    },
+
     triggers: {
-      "click button.js-new": "contact:new"
+      "click @ui.newButton": "contact:new"
     },
 
     events: {
-      "submit #filter-form": "filterContacts"
-    },
-
-    ui: {
-      criterion: "input.js-filter-criterion"
+      "submit @ui.filterForm": "filterContacts"
     },
 
     filterContacts: function(e){
       e.preventDefault();
-      var criterion = this.$(".js-filter-criterion").val();
-      this.trigger("contacts:filter", criterion);
+      this.trigger("contacts:filter", this.ui.criterion.val());
     },
 
     onSetFilterCriterion: function(criterion){
@@ -45,10 +47,16 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
     tagName: "tr",
     template: "#contact-list-item",
 
+    ui: {
+      deleteButton: "td button.js-delete",
+      editButton: "td a.js-edit",
+      showButton: "td a.js-show"
+    },
+
     triggers: {
-      "click td a.js-show": "contact:show",
-      "click td a.js-edit": "contact:edit",
-      "click button.js-delete": "contact:delete"
+      "click @ui.showButton": "contact:show",
+      "click @ui.editButton": "contact:edit",
+      "click @ui.deleteButton": "contact:delete"
     },
 
     events: {

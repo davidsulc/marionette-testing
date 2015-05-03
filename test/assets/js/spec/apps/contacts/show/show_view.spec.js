@@ -32,7 +32,7 @@ describe("ContactsApp.Show", function(){
       this.spy(view, "trigger");
 
       view.once("render", function(){
-        this.$el.find(".js-edit").click();
+        this.ui.editButton.click();
         expect(this.trigger).to.have.been.calledWith("contact:edit", model).once;
         done();
       });

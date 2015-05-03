@@ -23,8 +23,18 @@ describe("ContactsApp.New.Contact", function(){
     delete this.view;
   });
 
-  it("inherits from ContactsApp.Common.Views.Form", function(){
-    expect(this.view instanceof ContactManager.ContactsApp.Common.Views.Form).to.be.true;
+  describe("inheritance", function(){
+    it("inherits from ContactsApp.Common.Views.Form", function(){
+      expect(this.view instanceof ContactManager.ContactsApp.Common.Views.Form).to.be.true;
+    });
+
+    it("triggers 'form:submit' when the form is submitted", sinon.test(function(){
+      this.stub(this.view, "trigger");
+      this.view.render();
+
+      this.view.ui.createButton.click();
+      expect(this.view.trigger).to.have.been.calledWith("form:submit").once;
+    }));
   });
 
   it("sets the 'title' attribute to 'New Contact'", function(){
@@ -33,7 +43,7 @@ describe("ContactsApp.New.Contact", function(){
 
   it("sets the submit button text to 'Create contact'", function(done){
     this.view.once("render", function(){
-      expect(this.$el.find(".js-submit").text()).to.equal("Create contact");
+      expect(this.ui.createButton.text()).to.equal("Create contact");
       done();
     });
     this.view.render();

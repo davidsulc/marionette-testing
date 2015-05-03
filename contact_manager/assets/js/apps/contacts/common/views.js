@@ -2,8 +2,12 @@ ContactManager.module("ContactsApp.Common.Views", function(Views, ContactManager
   Views.Form = Marionette.ItemView.extend({
     template: "#contact-form",
 
+    ui: {
+      submitButton: "button.js-submit"
+    },
+
     events: {
-      "click button.js-submit": "submitClicked"
+      "click @ui.submitButton": "submitClicked"
     },
 
     submitClicked: function(e){

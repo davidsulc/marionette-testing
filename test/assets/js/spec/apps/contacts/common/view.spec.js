@@ -33,7 +33,7 @@ describe("ContactsApp.Common.Views.Form", function(){
       modelData.lastName = "Dunn";
 
       $("#contact-lastName").val(modelData.lastName);
-      view.$el.find(".js-submit").click();
+      view.ui.submitButton.click();
       expect(submitSpy.calledOnce).to.be.true;
       expect(submitSpy.firstCall.args[0]).to.deep.equal(modelData);
       done();

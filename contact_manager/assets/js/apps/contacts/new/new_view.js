@@ -2,8 +2,16 @@ ContactManager.module("ContactsApp.New", function(New, ContactManager, Backbone,
   New.Contact = ContactManager.ContactsApp.Common.Views.Form.extend({
     title: "New Contact",
 
+    ui: {
+      createButton: ".js-submit"
+    },
+
+    events: {
+      "click @ui.createButton": "submitClicked"
+    },
+
     onRender: function(){
-      this.$(".js-submit").text("Create contact");
+      this.ui.createButton.text("Create contact");
     }
   });
 });
