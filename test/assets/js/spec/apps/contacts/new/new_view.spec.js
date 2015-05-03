@@ -31,9 +31,10 @@ describe("ContactsApp.New.Contact", function(){
     expect(this.view.title).to.equal("New Contact");
   });
 
-  it("sets the submit button text to 'Create contact'", function(){
+  it("sets the submit button text to 'Create contact'", function(done){
     this.view.once("render", function(){
       expect(this.$el.find(".js-submit").text()).to.equal("Create contact");
+      done();
     });
     this.view.render();
   });

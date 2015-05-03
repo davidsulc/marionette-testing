@@ -30,9 +30,10 @@ describe("ContactsApp.Edit.Contact", function(){
     expect(this.view instanceof ContactManager.ContactsApp.Common.Views.Form).to.be.true;
   });
 
-  it("sets the submit button text to 'Update contact'", function(){
+  it("sets the submit button text to 'Update contact'", function(done){
     this.view.once("render", function(){
       expect(this.$el.find(".js-submit").text()).to.equal("Update contact");
+      done();
     });
     this.view.render();
   });
@@ -43,9 +44,12 @@ describe("ContactsApp.Edit.Contact", function(){
     expect(this.view.title).to.equal("Edit " + firstName + " " + lastName);
   });
 
-  it("creates an H1 title if options.generateTitle is true", function(){
+  it("creates an H1 title if options.generateTitle is true", function(done){
+    var firstRender = $.Deferred(),
+        secondRender = $.Deferred();
     this.view.once("render", function(){
       expect(this.$el.find("h1").first().text()).to.equal('');
+      firstRender.resolve();
     });
     this.view.render();
 
@@ -54,7 +58,9 @@ describe("ContactsApp.Edit.Contact", function(){
       var firstName = this.model.get("firstName"),
           lastName = this.model.get("lastName");
       expect(this.$el.find("h1").first().text()).to.equal("Edit " + firstName + " " + lastName);
+      secondRender.resolve();
     });
     this.view.render();
+    $.when(firstRender, secondRender).done(done);
   });
 });

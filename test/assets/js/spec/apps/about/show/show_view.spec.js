@@ -10,7 +10,7 @@ describe("AboutApp.Show.Message", function(){
     delete this.$container;
   });
 
-  it("displays the 'about' message", function(){
+  it("displays the 'about' message", function(done){
     this.$fixture.empty().appendTo(this.$container);
 
     var view = new ContactManager.AboutApp.Show.Message({
@@ -19,6 +19,7 @@ describe("AboutApp.Show.Message", function(){
 
     view.once("render", function(){
       expect(view.$el.text()).to.contain("About this application");
+      done();
     });
     view.render();
   });

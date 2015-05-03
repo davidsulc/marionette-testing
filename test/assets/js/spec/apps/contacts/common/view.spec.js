@@ -14,7 +14,7 @@ describe("ContactsApp.Common.Views.Form", function(){
     this.$fixture.empty().appendTo(this.$container);
   });
 
-  it("triggers 'form:submit' with the form data when the submit button is clicked", function(){
+  it("triggers 'form:submit' with the form data when the submit button is clicked", function(done){
     var modelData = {
       firstName: "John",
       lastName: "Doe",
@@ -36,6 +36,7 @@ describe("ContactsApp.Common.Views.Form", function(){
       view.$el.find(".js-submit").click();
       expect(submitSpy.calledOnce).to.be.true;
       expect(submitSpy.firstCall.args[0]).to.deep.equal(modelData);
+      done();
     });
     view.render();
   });
@@ -50,17 +51,18 @@ describe("ContactsApp.Common.Views.Form", function(){
       this.getErrorText = function(attribute){ return this.view.$el.find("#contact-" + attribute).next(".error").text(); };
     });
 
-    it("displays form errors on 'form:data:invalid' event", function(){
+    it("displays form errors on 'form:data:invalid' event", function(done){
       var self = this;
       this.view.once("render", function(){
         expect(self.getErrorText("firstName")).to.equal('');
         this.triggerMethod("form:data:invalid", { firstName: "first name error message" });
         expect(self.getErrorText("firstName")).to.equal("first name error message");
+        done();
       });
       this.view.render();
     });
 
-    it("clears the displayed errors before displaying new error messages", function(){
+    it("clears the displayed errors before displaying new error messages", function(done){
       var self = this;
       this.view.once("render", function(){
         this.triggerMethod("form:data:invalid", {
@@ -72,6 +74,7 @@ describe("ContactsApp.Common.Views.Form", function(){
         this.triggerMethod("form:data:invalid", { lastName: "problem with last name" });
         expect(self.getErrorText("firstName")).to.equal('');
         expect(self.getErrorText("lastName")).to.equal("problem with last name");
+        done();
       });
       this.view.render();
     });

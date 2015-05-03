@@ -79,28 +79,31 @@ describe("ContactsApp.List", function(){
       delete this.view;
     });
 
-    it("triggers 'contact:new' when the 'new' button is clicked", function(){
+    it("triggers 'contact:new' when the 'new' button is clicked", function(done){
       this.view.once("render", function(){
         this.$el.find(".js-new").click();
         expect(this.trigger).to.have.been.calledWith("contact:new").once;
+        done();
       });
       this.view.render();
     });
 
-    it("triggers 'contacts:filter' with the criterion when #filter-form is submitted", function(){
+    it("triggers 'contacts:filter' with the criterion when #filter-form is submitted", function(done){
       this.view.once("render", function(){
         this.criterion.value("abc");
         this.$el.find("#filter-form button[type=submit]").click();
         expect(this.trigger).to.have.been.calledWith("contacts:filter", "abc").once;
+        done();
       });
       this.view.render();
     });
 
-    it("updates the criterion in the filter form when the 'set:filter:criterion' method is triggered", function(){
+    it("updates the criterion in the filter form when the 'set:filter:criterion' method is triggered", function(done){
       this.view.once("render", function(){
         expect(this.criterion.value()).to.equal('');
         this.triggerMethod("set:filter:criterion", "xyz")
         expect(this.criterion.value()).to.equal("xyz");
+        done();
       });
       this.view.render();
     });
@@ -129,11 +132,12 @@ describe("ContactsApp.List", function(){
 
     var testButton = function(action){
       return (function(){
-        it("triggers 'contact:" + action + "' when the '" + action + "' button is clicked", sinon.test(function(){
+        it("triggers 'contact:" + action + "' when the '" + action + "' button is clicked", sinon.test(function(done){
           this.spy(this.view, "trigger");
           this.view.once("render", function(){
             this.$el.find(".js-" + action).click();
             expect(this.trigger).to.have.been.calledWith("contact:" + action).once;
+            done();
           });
           this.view.render();
         }));
@@ -166,7 +170,7 @@ describe("ContactsApp.List", function(){
       delete this.view;
     });
 
-    it("displays a message indicating there are no contacts to display when collection is empty", function(){
+    it("displays a message indicating there are no contacts to display when collection is empty", function(done){
       var view = new ContactManager.ContactsApp.List.Contacts({
         el: this.$fixture,
         collection: new ContactManager.Entities.ContactCollection()
@@ -174,12 +178,13 @@ describe("ContactsApp.List", function(){
 
       view.once("render", function(){
         expect(view.$el.text()).to.contain("No contacts to display.");
+        done();
       });
       view.render();
     });
 
     describe("item view rendering order", function(){
-      it("renders items in order on initial render", function(){
+      it("renders items in order on initial render", function(done){
         this.view.once("render", function(){
           var $a = $("tr:contains('AAA')").first();
           var $b = $("tr:contains('BBB')").first();
@@ -189,11 +194,12 @@ describe("ContactsApp.List", function(){
           expect(dataRows.index($a)).to.equal(0);
           expect(dataRows.index($b)).to.equal(1);
           expect(dataRows.index($c)).to.equal(2);
+          done();
         });
         this.view.render();
       });
 
-      it("prepends new item views after initial render", function(){
+      it("prepends new item views after initial render", function(done){
         this.view.once("render", function(){
           var newModel = new ContactManager.Entities.Contact({
             id: 4, firstName: "DDD", lastName: "DDD"
@@ -205,6 +211,7 @@ describe("ContactsApp.List", function(){
           var dataRows = $("tr:has(td)");
           expect(dataRows.index($d)).to.equal(0);
           expect(dataRows.index($a)).to.equal(1);
+          done();
         });
         this.view.render();
       });
