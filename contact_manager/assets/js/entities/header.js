@@ -23,9 +23,13 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
   };
 
   var headers;
+  Entities._headersInitialized = function(){
+    return headers !== undefined;
+  };
+
   var API = {
     getHeaders: function(){
-      if(headers === undefined){
+      if( ! Entities._headersInitialized()){
         headers = Entities._initializeHeaders();
       }
       return headers;

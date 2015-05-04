@@ -3,8 +3,12 @@ ContactManager.module("HeaderApp.List", function(List, ContactManager, Backbone,
     template: "#header-link",
     tagName: "li",
 
+    ui: {
+      link: "a"
+    },
+
     events: {
-      "click a": "navigate"
+      "click @ui.link": "navigate"
     },
 
     navigate: function(e){
@@ -26,13 +30,12 @@ ContactManager.module("HeaderApp.List", function(List, ContactManager, Backbone,
     childView: List.Header,
     childViewContainer: "ul",
 
-    events: {
-      "click a.brand": "brandClicked"
+    ui: {
+      brand: "a.brand"
     },
 
-    brandClicked: function(e){
-      e.preventDefault();
-      this.trigger("brand:clicked");
+    triggers: {
+      "click @ui.brand": "brand:clicked"
     }
   });
 });

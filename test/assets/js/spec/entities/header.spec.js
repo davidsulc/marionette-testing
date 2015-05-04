@@ -57,6 +57,7 @@ describe("Header entity", function(){
 
     it("can be fetched with a 'header:entities' request", sinon.test(function(){
       var fakeCollection = {};
+      this.stub(ContactManager.Entities, "_headersInitialized").returns(false);
       this.stub(ContactManager.Entities, "_initializeHeaders").returns(fakeCollection);
 
       var headers = ContactManager.request("header:entities");
