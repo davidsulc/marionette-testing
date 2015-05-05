@@ -17,9 +17,9 @@ ContactManager.module("AboutApp", function(AboutApp, ContactManager, Backbone, M
     AboutApp._API.showAbout();
   });
 
-  AboutApp.on("start", function(){
+  AboutApp.onStart = function(){
     new AboutApp.Router({
       controller: AboutApp._API
     });
-  });
+  };
 });

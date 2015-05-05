@@ -48,9 +48,9 @@ ContactManager.module("ContactsApp", function(ContactsApp, ContactManager, Backb
     ContactsApp._API.editContact(id);
   });
 
-  ContactsApp.on("start", function(){
+  ContactsApp.onStart = function(){
     new ContactsApp.Router({
       controller: ContactsApp._API
     });
-  });
+  };
 });

@@ -16,37 +16,41 @@ ContactManager.RegionContainer = Marionette.LayoutView.extend({
     header: "#header-region",
     main: "#main-region",
     dialog: "#dialog-region"
+  },
+
+  configureDialogRegion: function(){
+    this.dialog.onShow = function(view){
+      var self = this;
+      var closeDialog = function(){
+        self.stopListening();
+        self.empty();
+        self.$el.dialog("destroy");
+      };
+
+      this.listenTo(view, "dialog:close", closeDialog);
+
+      this.$el.dialog({
+        modal: true,
+        title: view.title,
+        width: "auto",
+        close: function(e, ui){
+          closeDialog();
+        }
+      });
+    };
   }
 });
 
 ContactManager._configureRegions = function(){
   this.regions = new ContactManager.RegionContainer();
+  this.regions.configureDialogRegion();
 };
 
-ContactManager.on("before:start", function(){
+ContactManager.onBeforeStart = function(){
   ContactManager._configureRegions();
-  ContactManager.regions.dialog.onShow = function(view){
-    var self = this;
-    var closeDialog = function(){
-      self.stopListening();
-      self.empty();
-      self.$el.dialog("destroy");
-    };
+};
 
-    this.listenTo(view, "dialog:close", closeDialog);
-
-    this.$el.dialog({
-      modal: true,
-      title: view.title,
-      width: "auto",
-      close: function(e, ui){
-        closeDialog();
-      }
-    });
-  };
-});
-
-ContactManager.on("start", function(){
+ContactManager.onStart = function(){
   if(Backbone.history){
     Backbone.history.start();
 
@@ -54,4 +58,4 @@ ContactManager.on("start", function(){
       ContactManager.trigger("contacts:list");
     }
   }
-});
+};

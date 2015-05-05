@@ -9,7 +9,7 @@ ContactManager.module("HeaderApp", function(Header, ContactManager, Backbone, Ma
     ContactManager.HeaderApp.List.Controller.setActiveHeader(name);
   });
 
-  Header.on("start", function(){
+  Header.onStart = function(){
     API.listHeader();
-  });
+  };
 });
